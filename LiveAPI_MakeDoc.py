@@ -89,7 +89,7 @@ def get_doc(obj):
         doc = doc.replace("   ", "")  # Strip chunks of whitespace from docstrings, for wrapped display
         doc = doc.replace("<", "&lt;")  # replace XML reserved characters
         doc = doc.replace(">", "&gt;")
-        doc = doc.replace("&", "&amp;")
+        #doc = doc.replace("&", "&amp;")
     return doc
 
 
@@ -143,8 +143,12 @@ def describe_obj(descr, obj):
                     describe_obj("Method", member)
             for (name, member) in members:
                 if (str(type(member)).startswith("<class")):
-                    print_obj_info("Value", member, name)
-                    LINE.pop()
+                    if inspect.ismethod(member) or inspect.isbuiltin(member):
+                        continue
+                    elif name != "<unnamed Boost.Python function>" and not name.startswith('__'):
+                        # this check procedure needs to be more sophisticated
+                        print_obj_info("Value", member, name)
+                        LINE.pop()
             for (name, member) in members:
                 if str(type(member)) == "<type 'object'>" or (
                         str(type(member)) == "<type 'type'>" and not repr(obj).startswith(
